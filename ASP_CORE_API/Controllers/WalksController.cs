@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using ASP_CORE_API.Models.Domain;
 using ASP_CORE_API.Repositories;
+using ASP_CORE_API.CustomActionFilters;
 
 namespace ASP_CORE_API.Controllers
 {
@@ -21,17 +22,20 @@ namespace ASP_CORE_API.Controllers
         }
 
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> CreateAsync([FromBody] AddWalkDto addWalkDto)
         {
+
             var WalkDoaminModel = _mapper.Map<Walk>(addWalkDto);
 
             await _walkRepository.CreateAsync(WalkDoaminModel);
 
             return Ok(_mapper.Map<WalkDto>(WalkDoaminModel));
+
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync([FromQuery] string? filterOn, [FromQuery] string? filterQuery)
         {
             var walksDomainModel = await _walkRepository.GetAllWalksAsync();
 
@@ -56,8 +60,10 @@ namespace ASP_CORE_API.Controllers
 
         [HttpPatch]
         [Route("{id:Guid}")]
+        [ValidateModel]
         public async Task<IActionResult> Update(Guid id, UpdateWalkDto updateWalkDto)
         {
+
             var walkDomainModel = _mapper.Map<Walk>(updateWalkDto);
 
             walkDomainModel = await _walkRepository.UpdateAsync(id, updateWalkDto);
@@ -68,13 +74,14 @@ namespace ASP_CORE_API.Controllers
             }
 
             return Ok(_mapper.Map<WalkDto>(walkDomainModel));
+
         }
 
         [HttpDelete]
         [Route("{id:Guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            return Ok(await _walkRepository.DeleteAsync(id));   
+            return Ok(await _walkRepository.DeleteAsync(id));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using ASP_CORE_API.Data;
+﻿using ASP_CORE_API.CustomActionFilters;
+using ASP_CORE_API.Data;
 using ASP_CORE_API.Models.Domain;
 using ASP_CORE_API.Models.Dtos;
 using ASP_CORE_API.Repositories;
@@ -49,6 +50,7 @@ namespace ASP_CORE_API.Controllers
         }
 
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> Create([FromBody] AddRegionDto addRegionDto)
         {
             var regionDomainModel = mapper.Map<Region>(addRegionDto);
@@ -58,10 +60,12 @@ namespace ASP_CORE_API.Controllers
             var regionDto = mapper.Map<RegionDto>(regionDomainModel);
 
             return CreatedAtAction(nameof(GetById), new { id = regionDto.Id }, regionDto);
+
         }
 
         [HttpPatch]
         [Route("{id:Guid}")]
+        [ValidateModel]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionDto updateRegionDto)
         {
             var regionDomainModel = mapper.Map<Region>(updateRegionDto);
