@@ -35,9 +35,16 @@ namespace ASP_CORE_API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync([FromQuery] string? filterOn, [FromQuery] string? filterQuery)
+        public async Task<IActionResult> GetAllAsync(
+            [FromQuery] string? filterOn,
+            [FromQuery] string? filterQuery,
+            [FromQuery] string? sortBy,
+            [FromQuery] bool? isAscending,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 25
+            )
         {
-            var walksDomainModel = await _walkRepository.GetAllWalksAsync();
+            var walksDomainModel = await _walkRepository.GetAllWalksAsync(filterOn, filterQuery, sortBy, isAscending, page, pageSize);
 
             // Map domain models to DTOs
             var walksDto = _mapper.Map<List<WalkDto>>(walksDomainModel);
@@ -63,7 +70,6 @@ namespace ASP_CORE_API.Controllers
         [ValidateModel]
         public async Task<IActionResult> Update(Guid id, UpdateWalkDto updateWalkDto)
         {
-
             var walkDomainModel = _mapper.Map<Walk>(updateWalkDto);
 
             walkDomainModel = await _walkRepository.UpdateAsync(id, updateWalkDto);
@@ -74,7 +80,6 @@ namespace ASP_CORE_API.Controllers
             }
 
             return Ok(_mapper.Map<WalkDto>(walkDomainModel));
-
         }
 
         [HttpDelete]
