@@ -24,6 +24,7 @@
 
 
 using ASP_CORE_API.Data;
+using ASP_CORE_API.Mapper;
 using ASP_CORE_API.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,6 +39,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<IRWalksDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("IRWalksConnectionString")));
 
 builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
+builder.Services.AddScoped<IWalkRepository, SQLWalkRepository>();
+
+builder.Services.AddAutoMapper(typeof(AutomapperProfies));
 
 var app = builder.Build();
 
