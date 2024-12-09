@@ -1,6 +1,7 @@
 ﻿using ASP_CORE_API.Data;
 using ASP_CORE_API.Models.Domain;
 using ASP_CORE_API.Models.Dtos;
+using ASP_CORE_API.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,15 +13,18 @@ namespace ASP_CORE_API.Controllers
     public class RegionsController : ControllerBase
     {
         private readonly IRWalksDbContext dbContext;
-        public RegionsController(IRWalksDbContext dbContext)
+        private readonly IRegionRepository regionRepository;
+
+        public RegionsController(IRWalksDbContext dbContext, IRegionRepository regionRepository)
         {
             this.dbContext = dbContext;
+            this.regionRepository = regionRepository;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var regions = await dbContext.Regions.ToListAsync();
+            var regions = await regionRepository.GetAllAsync();
 
             var regionsDto = new List<RegionDto>();
 
@@ -42,7 +46,7 @@ namespace ASP_CORE_API.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var region = await dbContext.Regions.FirstOrDefaultAsync(r => r.Id == id);
+            var region = await regionRepository.GetByIdAsync(id);
             if (region == null)
             {
                 return NotFound();
@@ -71,8 +75,7 @@ namespace ASP_CORE_API.Controllers
                 Name = addRegionDto.Name,
             };
 
-            await dbContext.Regions.AddAsync(regionDomainModel);
-            await dbContext.SaveChangesAsync();
+            await regionRepository.CreateAsync(regionDomainModel);
 
             var regionsDto = new RegionDto
             {
@@ -89,18 +92,19 @@ namespace ASP_CORE_API.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionDto updateRegionDto)
         {
-            var regionDomainModel = await dbContext.Regions.FirstOrDefaultAsync(r => r.Id == id);
+            var regionDomainModel = new Region
+            {
+                Code = updateRegionDto.Code,
+                RegionImageUrl = updateRegionDto.RegionImageUrl,
+                Name = updateRegionDto.Name,
+            };
+
+            regionDomainModel = await regionRepository.UpdateAsync(id, regionDomainModel);
 
             if (regionDomainModel == null)
             {
                 return NotFound();
             }
-
-            regionDomainModel.Code = updateRegionDto.Code;
-            regionDomainModel.Name = updateRegionDto.Name;
-            regionDomainModel.RegionImageUrl = updateRegionDto.RegionImageUrl;
-
-            await dbContext.SaveChangesAsync();
 
             var regionDto = new Region
             {
@@ -117,15 +121,12 @@ namespace ASP_CORE_API.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var regionDomainModel = await dbContext.Regions.FirstOrDefaultAsync(r => r.Id == id);
+            var regionDomainModel = await regionRepository.DeleteAsync(id);
 
             if (regionDomainModel == null)
             {
                 return NotFound();
             }
-
-            dbContext.Regions.Remove(regionDomainModel);
-            await dbContext.SaveChangesAsync();
 
             var regionDto = new Region
             {
