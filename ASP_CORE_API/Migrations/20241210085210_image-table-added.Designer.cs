@@ -4,6 +4,7 @@ using ASP_CORE_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ASP_CORE_API.Migrations
 {
     [DbContext(typeof(IRWalksDbContext))]
-    partial class IRWalksDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241210085210_image-table-added")]
+    partial class imagetableadded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -4,6 +4,7 @@ using ASP_CORE_API.Models.Domain;
 using ASP_CORE_API.Models.Dtos;
 using ASP_CORE_API.Repositories;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -51,6 +52,7 @@ namespace ASP_CORE_API.Controllers
 
         [HttpPost]
         [ValidateModel]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Create([FromBody] AddRegionDto addRegionDto)
         {
             var regionDomainModel = mapper.Map<Region>(addRegionDto);
@@ -66,6 +68,7 @@ namespace ASP_CORE_API.Controllers
         [HttpPatch]
         [Route("{id:Guid}")]
         [ValidateModel]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionDto updateRegionDto)
         {
             var regionDomainModel = mapper.Map<Region>(updateRegionDto);
@@ -82,6 +85,7 @@ namespace ASP_CORE_API.Controllers
 
         [HttpDelete]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var regionDomainModel = await regionRepository.DeleteAsync(id);
