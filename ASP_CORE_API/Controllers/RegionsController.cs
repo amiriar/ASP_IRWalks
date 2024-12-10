@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace ASP_CORE_API.Controllers
 {
@@ -18,20 +19,24 @@ namespace ASP_CORE_API.Controllers
         private readonly IRWalksDbContext dbContext;
         private readonly IRegionRepository regionRepository;
         private readonly IMapper mapper;
+        private readonly ILogger<RegionsController> logger;
 
-        public RegionsController(IRWalksDbContext dbContext, IRegionRepository regionRepository, IMapper mapper)
+        public RegionsController(IRWalksDbContext dbContext, IRegionRepository regionRepository, IMapper mapper, ILogger<RegionsController> logger)
         {
             this.dbContext = dbContext;
             this.regionRepository = regionRepository;
             this.mapper = mapper;
+            this.logger = logger;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            logger.LogInformation("Getall was called");
             var regions = await regionRepository.GetAllAsync();
 
             var regionsDto = mapper.Map<List<RegionDto>>(regions);
+            logger.LogInformation($"finished get all {JsonSerializer.Serialize(regionsDto)}");
 
             return Ok(regionsDto);
         }
